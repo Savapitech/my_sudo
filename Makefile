@@ -10,7 +10,6 @@ MAKEFLAGS += -j
 NAME := my_sudo
 
 SRC := $(wildcard src/*.c)
-SRC += $(wildcard src/auth/*.c)
 
 BUILD_DIR := .build
 

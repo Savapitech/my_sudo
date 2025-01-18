@@ -67,6 +67,8 @@ char *ask_pass(char *username)
     size_t buffer_sz = 128;
     struct termios tty;
 
+    if (username == NULL)
+        return NULL;
     if (tcgetattr(STDIN_FILENO, &tty) == -1)
         return NULL;
     printf(ASK_PASS_PROMT, username);

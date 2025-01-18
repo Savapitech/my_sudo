@@ -5,14 +5,18 @@
 ** _
 */
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 
-#include "exec.h"
+#include "auth.h"
+#include "common.h"
 
-int main(int ac, char **av)
+int main(int ac __attribute__((unused)), char **av __attribute__((unused)))
 {
-    if (ac < 2)
-        return EXIT_FAILURE;
-    execute_as(av[1], av[2], 0);
+    char *username = getlogin();
+    char *typed_pass = ask_pass(username);
+
+    if (typed_pass == NULL)
+        return S_EXIT_FAILURE;
+    printf("Check pass result %b\n", check_pass(username, typed_pass));
 }

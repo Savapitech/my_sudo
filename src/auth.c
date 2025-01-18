@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <termios.h>
 #include <unistd.h>
 
 #include "auth.h"
@@ -58,4 +59,23 @@ bool check_pass(char *username, char *typed_pass)
     if (strcmp(typed_hash, pass_hash) == 0)
         return true;
     return false;
+}
+
+char *ask_pass(char *username)
+{
+    char *buffer = NULL;
+    size_t buffer_sz = 128;
+    struct termios tty;
+
+    if (tcgetattr(STDIN_FILENO, &tty) == -1)
+        return NULL;
+    printf(ASK_PASS_PROMT, username);
+    tty.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+    getline(&buffer, &buffer_sz, stdin);
+    tty.c_lflag |= ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+    write(STDOUT_FILENO, "\n", 1);
+    buffer[strlen(buffer) - 1] = '\0';
+    return buffer;
 }

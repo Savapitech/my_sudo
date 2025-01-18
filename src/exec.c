@@ -5,13 +5,14 @@
 ** _
 */
 
+#define _GNU_SOURCE
 #include <stdbool.h>
 #include <unistd.h>
 
-bool execute_as(char *bin, char const *arg, uid_t uid)
+bool execute_as(char *bin, char **args, char **env, uid_t uid)
 {
     if (setuid(uid) == -1)
         return false;
-    execlp(bin, arg);
+    execvpe(bin, args, env);
     return true;
 }

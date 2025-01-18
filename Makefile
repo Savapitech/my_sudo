@@ -7,9 +7,10 @@
 
 MAKEFLAGS += -j
 
-NAME := bs_sudo
+NAME := my_sudo
 
 SRC := $(wildcard src/*.c)
+SRC += $(wildcard src/auth/*.c)
 
 BUILD_DIR := .build
 
@@ -26,6 +27,8 @@ CFLAGS += -Wwrite-strings -Werror=declaration-after-statement
 CFLAGS += -Werror=format-nonliteral -Werror=int-conversion -Werror=return-type
 CFLAGS += -Werror=vla-larger-than=0 -Wno-discarded-qualifiers
 
+LDFLAGS := -lcrypt
+
 DEBUG_FLAGS := -DR_DEBUG_MODE -g3
 
 include utils.mk
@@ -38,7 +41,7 @@ $(BUILD_DIR)/%.o: %.c
 	@ $(LOG_TIME) "$(C_GREEN) CC $(C_PURPLE) $(notdir $@) $(C_RESET)"
 
 $(NAME): $(OBJ)
-	@ $(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	@ $(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $(NAME)
 	@ $(LOG_TIME) "$(C_GREEN) CC $(C_PURPLE) $(notdir $@) $(C_RESET)"
 	@ $(LOG_TIME) "$(C_GREEN) OK  Compilation finished $(C_RESET)"
 

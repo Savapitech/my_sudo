@@ -10,6 +10,7 @@
 .vscode
 
 # Bin
+my_sudo
 a.out
 libmy.a
 test

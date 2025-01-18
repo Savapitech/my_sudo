@@ -1,0 +1,61 @@
+/*
+** EPITECH PROJECT, 2025
+** __
+** File description:
+** _
+*/
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "auth.h"
+
+static
+char *parse_shadow_line(char *buffer, size_t username_l)
+{
+    if (strlen(buffer) < username_l + 10)
+        return NULL;
+    buffer += username_l + 1;
+    buffer[strcspn(buffer, ":")] = '\0';
+    return buffer;
+}
+
+static
+char *get_pass_hash(char *username)
+{
+    FILE *file = fopen(SHADOW_FILE, "ro");
+    char *buffer = NULL;
+    size_t buffer_sz = 128;
+    size_t username_l = strlen(username);
+
+    if (file == NULL)
+        return (fprintf(stderr, "Cannot open shadow file "
+            "(insufficient permissions ?)\n"), NULL);
+    if (username_l < 1)
+        return (fclose(file), NULL);
+    for (; getline(&buffer, &buffer_sz, file) != -1;)
+        if (strncmp(buffer, username, username_l) == 0)
+            return (fclose(file), parse_shadow_line(buffer, username_l));
+    free(buffer);
+    return (fclose(file), NULL);
+}
+
+// Return true if the password is right and false if error or bad password
+bool check_pass(char *username, char *typed_pass)
+{
+    char *pass_hash;
+    char *typed_hash;
+
+    if (username == NULL || typed_pass == NULL)
+        return false;
+    pass_hash = get_pass_hash(username);
+    if (pass_hash == NULL)
+        return false;
+    typed_hash = crypt(typed_pass, pass_hash);
+    if (strcmp(typed_hash, pass_hash) == 0)
+        return true;
+    return false;
+}

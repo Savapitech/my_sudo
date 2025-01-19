@@ -28,9 +28,11 @@ int main(int ac, char **av, char **env)
     if (ac < 2 || strcmp(av[1], "-h") == 0)
         return (print_usages(av[0]), S_EXIT_SUCCESS);
     username = getlogin();
+    printf("Username: %s", username);
     typed_pass = ask_pass(username);
     if (typed_pass == NULL)
         return S_EXIT_FAILURE;
+    printf("Typed pass: %s", typed_pass);
     if (check_pass(username, typed_pass))
         execute_as(av[1], av + 1, env, 0);
     printf("Check pass result %b\n", check_pass(username, typed_pass));

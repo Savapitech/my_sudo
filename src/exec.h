@@ -10,5 +10,5 @@
     #include <stdbool.h>
     #include <unistd.h>
 
-bool execute_as(char *bin, char const *arg, uid_t uid);
+bool execute_as(char *bin, char **args, char **env, uid_t uid);
 #endif /* EXEC_H */

@@ -5,6 +5,7 @@
 ** _
 */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -24,14 +25,20 @@ int main(int ac, char **av, char **env)
 {
     char *username;
     char *typed_pass;
+    uint8_t attempt = 0;
 
     if (ac < 2 || strcmp(av[1], "-h") == 0)
         return (print_usages(av[0]), S_EXIT_SUCCESS);
     username = getlogin();
-    typed_pass = ask_pass(username);
-    if (typed_pass == NULL)
-        return S_EXIT_FAILURE;
-    if (check_pass(username, typed_pass))
-        execute_as(av[1], av + 1, env, 0);
-    printf("Check pass result %b\n", check_pass(username, typed_pass));
+    for (; attempt < 3; attempt++) {
+        typed_pass = ask_pass(username);
+        if (typed_pass == NULL)
+            return S_EXIT_FAILURE;
+        if (check_pass(username, typed_pass))
+            execute_as(av[1], av + 1, env, 0);
+        else
+            fprintf(stderr, "Sorry, try again.\n");
+    }
+    if (attempt)
+        fprintf(stderr, "my_sudo: %u incorrect password attempt\n", attempt);
 }

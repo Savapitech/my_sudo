@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -14,11 +15,11 @@
 #include "common.h"
 #include "exec.h"
 
-static
 void print_usages(char *bin_name)
 {
     printf("usage: %s -h\n"
         "usage: %s [-ugEs] [command [args ...]]\n", bin_name, bin_name);
+    exit(S_EXIT_SUCCESS);
 }
 
 int main(int ac, char **av, char **env)
@@ -26,9 +27,9 @@ int main(int ac, char **av, char **env)
     char *username;
     char *typed_pass;
     uint8_t attempt = 0;
+    sf_t sf;
 
-    if (ac < 2 || strcmp(av[1], "-h") == 0)
-        return (print_usages(av[0]), S_EXIT_SUCCESS);
+    parser(ac, av, &sf);
     username = getlogin();
     for (; attempt < 3; attempt++) {
         typed_pass = ask_pass(username);

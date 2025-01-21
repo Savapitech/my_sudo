@@ -35,7 +35,7 @@ int my_sudo(char **av, char **env)
             return S_EXIT_FAILURE;
         if (check_pass(username, typed_pass))
             break;
-        (sleep((rand() % 2) + 1), fprintf(stderr, "Sorry, try again.\n"));
+        fprintf(stderr, "Sorry, try again.\n");
     }
     if (attempt) {
         fprintf(stderr, "my_sudo: %u incorrect password attempt%s\n",

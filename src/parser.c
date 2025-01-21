@@ -17,9 +17,11 @@ void switch_arg(sf_t *sf, char c, char *bin_name)
             sf->username = optarg;
             break;
         case 'h':
+            print_usages(bin_name, S_EXIT_SUCCESS);
+            break;
         case '?':
         default:
-            print_usages(bin_name);
+            print_usages(bin_name, S_EXIT_FAILURE);
     }
 }
 
@@ -28,7 +30,7 @@ int parser(int ac, char **av, sf_t *sf)
     char c;
 
     if (ac < 2)
-        print_usages(av[0]);
+        print_usages(av[0], S_EXIT_FAILURE);
     for (c = getopt(ac, av, "u:g:E:s:h"); c != -1;
         c = getopt(ac, av, "u:g:E:s:h"))
             switch_arg(sf, c, av[0]);

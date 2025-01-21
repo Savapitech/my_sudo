@@ -15,31 +15,44 @@
 #include "common.h"
 #include "exec.h"
 
-void print_usages(char *bin_name)
+void print_usages(char *bin_name, uint8_t exit_code)
 {
     printf("usage: %s -h\n"
         "usage: %s [-ugEs] [command [args ...]]\n", bin_name, bin_name);
-    exit(S_EXIT_SUCCESS);
+    exit(exit_code);
 }
 
-int main(int ac, char **av, char **env)
+static
+int my_sudo(char **av, char **env)
 {
-    char *username;
+    char *username = getlogin();
     char *typed_pass;
     uint8_t attempt = 0;
-    sf_t sf;
 
-    parser(ac, av, &sf);
-    username = getlogin();
     for (; attempt < 3; attempt++) {
         typed_pass = ask_pass(username);
         if (typed_pass == NULL)
             return S_EXIT_FAILURE;
         if (check_pass(username, typed_pass))
-            execute_as(av[1], av + 1, env, 0);
-        else
-            fprintf(stderr, "Sorry, try again.\n");
+            break;
+        (sleep((rand() % 2) + 1), fprintf(stderr, "Sorry, try again.\n"));
     }
-    if (attempt)
-        fprintf(stderr, "my_sudo: %u incorrect password attempt\n", attempt);
+    if (attempt) {
+        fprintf(stderr, "my_sudo: %u incorrect password attempt%s\n",
+            attempt, attempt > 1 ? "s" : "");
+        if (attempt > 2)
+            return S_EXIT_FAILURE;
+    }
+    execute_as(av[1], av + 1, env, 0);
+    return S_EXIT_SUCCESS;
+}
+
+int main(int ac, char **av, char **env)
+{
+    sf_t sf;
+
+    parser(ac, av, &sf);
+    if (my_sudo(av, env) == S_EXIT_FAILURE)
+        return S_EXIT_FAILURE;
+    return S_EXIT_SUCCESS;
 }

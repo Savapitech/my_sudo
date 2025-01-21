@@ -21,5 +21,5 @@ typedef struct {
 int stridx(char const *str, char c);
 
 int parser(int ac, char **av, sf_t *sf);
-void print_usages(char *bin_name);
+void print_usages(char *bin_name, uint8_t exit_code);
 #endif /* COMMON_H */

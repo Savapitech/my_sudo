@@ -27,6 +27,8 @@ int parser(int ac, char **av, sf_t *sf)
 {
     char c;
 
+    if (ac < 2)
+        print_usages(av[0]);
     for (c = getopt(ac, av, "u:g:E:s:h"); c != -1;
         c = getopt(ac, av, "u:g:E:s:h"))
             switch_arg(sf, c, av[0]);

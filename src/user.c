@@ -23,8 +23,6 @@ uid_t get_uid(char *username)
     if (username == NULL)
         return S_EXIT_FAILURE;
     username_l = strlen(username);
-    if (!username_l)
-        return S_EXIT_FAILURE;
     file = fopen("/etc/passwd", "r");
     if (file == NULL)
         return S_EXIT_FAILURE;

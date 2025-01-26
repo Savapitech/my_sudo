@@ -14,6 +14,7 @@
 #include "auth.h"
 #include "common.h"
 #include "exec.h"
+#include "user.h"
 
 void print_usages(char *bin_name, uint8_t exit_code)
 {
@@ -23,7 +24,7 @@ void print_usages(char *bin_name, uint8_t exit_code)
 }
 
 static
-int my_sudo(char **av, char **env)
+int my_sudo(sf_t *sf)
 {
     char *username = getlogin();
     char *typed_pass;
@@ -43,16 +44,18 @@ int my_sudo(char **av, char **env)
         if (attempt > 2)
             return S_EXIT_FAILURE;
     }
-    execute_as(av[1], av + 1, env, 0);
+    execute_as(sf->args[sf->optindex], sf, get_uid(sf->username));
     return S_EXIT_SUCCESS;
 }
 
 int main(int ac, char **av, char **env)
 {
-    sf_t sf;
+    sf_t sf = { 0, .args = av, .env = env };
 
-    parser(ac, av, &sf);
-    if (my_sudo(av, env) == S_EXIT_FAILURE)
+    sf.optindex = parser(ac, av, &sf);
+    if (!(sf.optindex < ac))
+        print_usages(av[0], S_EXIT_FAILURE);
+    if (my_sudo(&sf) == S_EXIT_FAILURE)
         return S_EXIT_FAILURE;
     return S_EXIT_SUCCESS;
 }

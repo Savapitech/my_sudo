@@ -9,10 +9,16 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-bool execute_as(char *bin, char **args, char **env, uid_t uid)
+#include <stdio.h>
+
+#include "common.h"
+
+bool execute_as(char *bin, sf_t *sf, int uid)
 {
+    uid = uid == -1 ? 0 : uid;
     if (setuid(uid) == -1)
         return false;
-    execvpe(bin, args, env);
+    printf("UID %d\n", uid);
+    execvpe(bin, sf->args + sf->optindex, sf->env);
     return true;
 }

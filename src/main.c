@@ -26,15 +26,15 @@ void print_usages(char *bin_name, uint8_t exit_code)
 static
 int my_sudo(sf_t *sf)
 {
-    char *username = getlogin();
+    char *launching_username = getlogin();
     char *typed_pass;
     uint8_t attempt = 0;
 
     for (; attempt < 3; attempt++) {
-        typed_pass = ask_pass(username);
+        typed_pass = ask_pass(launching_username);
         if (typed_pass == NULL)
             return S_EXIT_FAILURE;
-        if (check_pass(username, typed_pass))
+        if (check_pass(launching_username, typed_pass))
             break;
         fprintf(stderr, "Sorry, try again.\n");
     }

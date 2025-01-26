@@ -26,7 +26,7 @@ void print_usages(char *bin_name, uint8_t exit_code)
 static
 int my_sudo(sf_t *sf)
 {
-    char *launching_username = getlogin();
+    char *launching_username = get_username(getuid());
     char *typed_pass;
     uint8_t attempt = 0;
 

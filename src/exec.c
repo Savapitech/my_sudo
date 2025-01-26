@@ -11,6 +11,8 @@
 
 #include "common.h"
 
+
+// Replace the actual process with the bin pointed process as the specified uid
 bool execute_as(char *bin, sf_t *sf, int uid)
 {
     uid = uid == -1 ? 0 : uid;

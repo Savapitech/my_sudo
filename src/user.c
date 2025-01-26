@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 
+// Return the username uid
 int get_uid(char *username)
 {
     FILE *file;
@@ -32,4 +33,26 @@ int get_uid(char *username)
         }
     }
     return (fclose(file), -1);
+}
+
+// Return the uid username
+char *get_username(uid_t uid)
+{
+    FILE *file;
+    char *buffer = NULL;
+    size_t buffer_sz;
+    char *user;
+    char *uid_str;
+
+    file = fopen("/etc/passwd", "r");
+    if (file == NULL)
+        return (fprintf(stderr, "Cannot open passwd file!\n"), NULL);
+    while (getline(&buffer, &buffer_sz, file)) {
+        user = strtok(buffer, ":");
+        strtok(NULL, ":");
+        uid_str = strtok(NULL, ":");
+        if (uid_str && (uid_t)strtoul(uid_str, NULL, 10) == uid)
+            return (fclose(file), strdup(user));
+    }
+    return (fclose(file), NULL);
 }

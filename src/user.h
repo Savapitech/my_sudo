@@ -10,4 +10,5 @@
     #include <unistd.h>
 
 int get_uid(char *username);
+char *get_username(uid_t uid);
 #endif /* USER_H */

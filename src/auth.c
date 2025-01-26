@@ -61,6 +61,7 @@ bool check_pass(char *username, char *typed_pass)
     return false;
 }
 
+// Launch a mini repl to get the user input without echo the typed chars
 char *ask_pass(char *username)
 {
     char *buffer = NULL;

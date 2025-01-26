@@ -18,6 +18,9 @@ bool execute_as(char *bin, sf_t *sf, int uid)
     uid = uid == -1 ? 0 : uid;
     if (setuid(uid) == -1)
         return false;
-    execvpe(bin, sf->args + sf->optindex, sf->env);
+    if (sf->flags & S_FLAGS_ENV)
+        execvpe(bin, sf->args + sf->optindex, sf->env);
+    else
+        execvp(bin, sf->args + sf->optindex);
     return true;
 }

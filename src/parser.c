@@ -16,6 +16,12 @@ void switch_arg(sf_t *sf, char c, char *bin_name)
         case 'u':
             sf->username = optarg;
             break;
+        case 'E':
+            sf->flags |= S_FLAGS_ENV;
+            break;
+        case 's':
+            sf->flags |= S_FLAGS_SHELL;
+            break;
         case 'h':
             print_usages(bin_name, S_EXIT_SUCCESS);
             break;
@@ -34,5 +40,5 @@ int parser(int ac, char **av, sf_t *sf)
     for (c = getopt(ac, av, "u:g:Esh"); c != -1;
         c = getopt(ac, av, "u:g:Esh"))
             switch_arg(sf, c, av[0]);
-    return S_EXIT_SUCCESS;
+    return optind;
 }

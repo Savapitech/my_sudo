@@ -10,28 +10,26 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "common.h"
-
-uid_t get_uid(char *username)
+int get_uid(char *username)
 {
     FILE *file;
     char *buffer;
     size_t username_l;
     size_t buffer_sz;
-    uid_t result = 0;
 
     if (username == NULL)
-        return S_EXIT_FAILURE;
+        return -1;
     username_l = strlen(username);
     file = fopen("/etc/passwd", "r");
     if (file == NULL)
-        return S_EXIT_FAILURE;
+        return (fprintf(stderr, "Cannot open passwd file!\n"), -1);
     while (getline(&buffer, &buffer_sz, file)) {
         if (strncmp(buffer, username, username_l) == 0) {
-            buffer += 2;
-            buffer += strcspn(buffer, ":");
+            buffer = strtok(buffer, ":");
+            buffer = strtok(NULL, ":");
+            buffer = strtok(NULL, ":");
             return atoi(buffer);
         }
     }
-    return result;
+    return -1;
 }

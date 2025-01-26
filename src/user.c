@@ -13,7 +13,7 @@
 int get_uid(char *username)
 {
     FILE *file;
-    char *buffer;
+    char *buffer = NULL;
     size_t username_l;
     size_t buffer_sz;
 
@@ -28,8 +28,8 @@ int get_uid(char *username)
             buffer = strtok(buffer, ":");
             buffer = strtok(NULL, ":");
             buffer = strtok(NULL, ":");
-            return atoi(buffer);
+            return (fclose(file), atoi(buffer));
         }
     }
-    return -1;
+    return (fclose(file), -1);
 }

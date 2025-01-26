@@ -31,8 +31,8 @@ int parser(int ac, char **av, sf_t *sf)
 
     if (ac < 2)
         print_usages(av[0], S_EXIT_FAILURE);
-    for (c = getopt(ac, av, "u:g:E:s:h"); c != -1;
-        c = getopt(ac, av, "u:g:E:s:h"))
+    for (c = getopt(ac, av, "u:g:Esh"); c != -1;
+        c = getopt(ac, av, "u:g:Esh"))
             switch_arg(sf, c, av[0]);
     return S_EXIT_SUCCESS;
 }

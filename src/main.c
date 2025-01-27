@@ -24,9 +24,8 @@ void print_usages(char *bin_name, uint8_t exit_code)
 }
 
 static
-int my_sudo(sf_t *sf)
+int auth_user(char *launching_username)
 {
-    char *launching_username = get_username(getuid());
     char *typed_pass;
     uint8_t attempt = 0;
 
@@ -44,6 +43,17 @@ int my_sudo(sf_t *sf)
         if (attempt > 2)
             return S_EXIT_FAILURE;
     }
+    return S_EXIT_SUCCESS;
+}
+
+static
+int my_sudo(sf_t *sf)
+{
+    char *launching_username = get_username(getuid());
+
+    if (strcmp(launching_username, "root") != 0)
+        if (auth_user(launching_username) == S_EXIT_FAILURE)
+            return S_EXIT_FAILURE;
     execute_as(sf->args[sf->optindex], sf, get_uid(sf->username));
     return S_EXIT_SUCCESS;
 }

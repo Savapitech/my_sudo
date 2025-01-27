@@ -14,6 +14,7 @@
 
 #include "auth.h"
 #include "common.h"
+#include "user.h"
 
 static
 char *parse_shadow_line(char *buffer, size_t username_l)
@@ -58,9 +59,13 @@ bool check_sudoers(char *username)
             "(insufficient permissions ?)\n"), false);
     if (username_l < 1)
         return (fclose(file), false);
-    for (; getline(&buffer, &buffer_sz, file) != -1;)
+    for (; getline(&buffer, &buffer_sz, file) != -1;) {
         if (strncmp(buffer, username, username_l) == 0)
             return (fclose(file), true);
+        buffer[strcspn(buffer, " ")] = '\0';
+        if (*buffer == '%' && is_user_in_group(buffer + 1, username))
+            return (fclose(file), true);
+    }
     free(buffer);
     return (fclose(file), false);
 }

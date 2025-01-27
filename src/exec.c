@@ -27,6 +27,8 @@ bool execute_as(char *bin, sf_t *sf, int uid)
         shell = getenv("SHELL");
         if (shell != NULL)
             execve(shell, sf->args + sf->optindex, sf->env);
+        else
+            return (fprintf(stderr, "Cannot find SHELL !\n"), false);
     }
     if (sf->flags & S_FLAGS_ENV)
         execvpe(bin, sf->args + sf->optindex, sf->env);

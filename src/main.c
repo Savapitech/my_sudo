@@ -53,7 +53,7 @@ int main(int ac, char **av, char **env)
     sf_t sf = { 0, .args = av, .env = env };
 
     sf.optindex = parser(ac, av, &sf);
-    if (!(sf.optindex < ac))
+    if (!(sf.optindex < ac) && !(sf.flags))
         print_usages(av[0], S_EXIT_FAILURE);
     if (my_sudo(&sf) == S_EXIT_FAILURE)
         return S_EXIT_FAILURE;

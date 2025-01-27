@@ -6,7 +6,9 @@
 */
 
 #define _GNU_SOURCE
+#include <errno.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -22,5 +24,7 @@ bool execute_as(char *bin, sf_t *sf, int uid)
         execvpe(bin, sf->args + sf->optindex, sf->env);
     else
         execvp(bin, sf->args + sf->optindex);
+    if (errno && errno == ENOENT)
+        fprintf(stderr, "my_sudo: %s: command not found\n", bin);
     return true;
 }

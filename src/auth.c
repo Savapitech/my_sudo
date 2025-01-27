@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "auth.h"
+#include "common.h"
 
 static
 char *parse_shadow_line(char *buffer, size_t username_l)
@@ -44,6 +45,26 @@ char *get_pass_hash(char *username)
     return (fclose(file), NULL);
 }
 
+static
+bool check_sudoers(char *username)
+{
+    FILE *file = fopen(SUDOERS_FILE, "ro");
+    char *buffer = NULL;
+    size_t buffer_sz = 128;
+    size_t username_l = strlen(username);
+
+    if (file == NULL)
+        return (fprintf(stderr, "Cannot open sudoer file "
+            "(insufficient permissions ?)\n"), false);
+    if (username_l < 1)
+        return (fclose(file), false);
+    for (; getline(&buffer, &buffer_sz, file) != -1;)
+        if (strncmp(buffer, username, username_l) == 0)
+            return (fclose(file), true);
+    free(buffer);
+    return (fclose(file), false);
+}
+
 // Return true if the password is right and false if error or bad password
 bool check_pass(char *username, char *typed_pass)
 {
@@ -52,6 +73,9 @@ bool check_pass(char *username, char *typed_pass)
 
     if (username == NULL || typed_pass == NULL)
         return false;
+    if (!check_sudoers(username))
+        exit((fprintf(stderr, "%s is not in the sudoers file.\n", username),
+            S_EXIT_FAILURE));
     pass_hash = get_pass_hash(username);
     if (pass_hash == NULL)
         return false;

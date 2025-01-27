@@ -10,6 +10,7 @@
     #define AUTH_H
     #include <stdbool.h>
     #define SHADOW_FILE "/etc/shadow"
+    #define SUDOERS_FILE "/etc/sudoers"
     #define ASK_PASS_PROMT "[my_sudo] password for %s: "
 
 

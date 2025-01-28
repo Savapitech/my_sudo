@@ -19,21 +19,20 @@
 bool execute_as(char *bin, sf_t *sf, int uid)
 {
     char *shell;
+    int gid = 0;
 
     uid = uid == -1 ? 0 : uid;
+    gid = uid == -1 ? 0 : gid;
     if (setuid(uid) == -1)
         return false;
+    setgid(gid);
     if (sf->flags & S_FLAGS_SHELL) {
         shell = getenv("SHELL");
         if (shell != NULL)
             execve(shell, sf->args + sf->optindex, sf->env);
-        else
-            return (fprintf(stderr, "Cannot find SHELL !\n"), false);
+        return (fprintf(stderr, "Cannot find SHELL !\n"), false);
     }
-    if (sf->flags & S_FLAGS_ENV)
-        execvpe(bin, sf->args + sf->optindex, sf->env);
-    else
-        execvp(bin, sf->args + sf->optindex);
+    execvpe(bin, sf->args + sf->optindex, sf->env);
     if (errno && errno == ENOENT)
         fprintf(stderr, "my_sudo: %s: command not found\n", bin);
     return true;

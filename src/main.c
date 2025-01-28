@@ -16,6 +16,12 @@
 #include "exec.h"
 #include "user.h"
 
+const
+char *PROMPT1 = "[my_sudo] password for ";
+
+const
+char *PROMPT2 = ": ";
+
 void print_usages(char *bin_name, uint8_t exit_code)
 {
     printf("usage: %s -h\n"
@@ -28,9 +34,11 @@ int auth_user(char *launching_username)
 {
     char *typed_pass;
     uint8_t attempt = 0;
+    char *p;
 
     for (; attempt < 3; attempt++) {
-        typed_pass = ask_pass(launching_username);
+        asprintf(&p, "[my_sudo] password for %s: ", launching_username);
+        typed_pass = getpass(p);
         if (typed_pass == NULL)
             return S_EXIT_FAILURE;
         if (check_pass(launching_username, typed_pass))

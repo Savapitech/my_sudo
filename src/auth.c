@@ -101,7 +101,7 @@ char *ask_pass(char *username)
         return NULL;
     if (tcgetattr(STDIN_FILENO, &tty) == -1)
         return NULL;
-    printf(ASK_PASS_PROMT, username);
+    printf("[my_sudo] password for %s: ", username);
     tty.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &tty);
     getline(&buffer, &buffer_sz, stdin);

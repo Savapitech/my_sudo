@@ -79,7 +79,7 @@ bool check_pass(char *username, char *typed_pass)
     if (username == NULL || typed_pass == NULL)
         return false;
     if (!check_sudoers(username))
-        exit((fprintf(stderr, "%s is not in the my_sudoers file.\n", username),
+        exit((fprintf(stderr, "%s is not in the sudoers file.\n", username),
             S_EXIT_FAILURE));
     pass_hash = get_pass_hash(username);
     if (pass_hash == NULL)

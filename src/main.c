@@ -35,10 +35,10 @@ int auth_user(char *launching_username)
             return S_EXIT_FAILURE;
         if (check_pass(launching_username, typed_pass))
             break;
-        fprintf(stderr, "Sorry, try again.\n");
+        printf("Sorry, try again.\n");
     }
     if (attempt) {
-        fprintf(stderr, "my_sudo: %u incorrect password attempt%s\n",
+        printf("my_sudo: %u incorrect password attempt%s\n",
             attempt, attempt > 1 ? "s" : "");
         if (attempt > 2)
             return S_EXIT_FAILURE;

@@ -16,12 +16,6 @@
 #include "exec.h"
 #include "user.h"
 
-const
-char *PROMPT1 = "[my_sudo] password for ";
-
-const
-char *PROMPT2 = ": ";
-
 void print_usages(char *bin_name, uint8_t exit_code)
 {
     printf("usage: %s -h\n"

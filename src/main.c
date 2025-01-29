@@ -51,12 +51,13 @@ int auth_user(char *launching_username)
 static
 int my_sudo(sf_t *sf)
 {
-    char *launching_username = get_username(getuid());
-
-    if (strcmp(launching_username, "root") != 0)
-        if (auth_user(launching_username) == S_EXIT_FAILURE)
+    sf->launching_user = get_username(getuid());
+    if (sf->launching_user == NULL)
+        return S_EXIT_FAILURE;
+    if (strcmp(sf->launching_user, "root") != 0)
+        if (auth_user(sf->launching_user) == S_EXIT_FAILURE)
             return S_EXIT_FAILURE;
-    execute_as(sf->args[sf->optindex], sf, get_uid(sf->username));
+    execute_as(sf->args[sf->optindex], sf);
     return S_EXIT_SUCCESS;
 }
 

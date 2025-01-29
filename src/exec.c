@@ -15,7 +15,7 @@
 
 #include "common.h"
 #include "group.h"
-
+#include "user.h"
 
 static
 bool exec_with_uid_gids(sf_t *sf, char *bin)
@@ -53,13 +53,15 @@ bool set_gids(sf_t *sf)
 }
 
 // Replace the actual process with the bin pointed process as the specified uid
-bool execute_as(char *bin, sf_t *sf, int uid)
+bool execute_as(char *bin, sf_t *sf)
 {
-    uid = uid == -1 ? 0 : uid;
-    sf->username = sf->username == NULL ? "root" : sf->username;
+    if (sf->username == NULL && sf->group_name == NULL)
+        sf->username = "root";
+    else if (sf->username == NULL && sf->group_name != NULL)
+        sf->username = sf->launching_user;
     if (set_gids(sf) == false)
         return false;
-    if (setuid(uid) == -1)
+    if (setuid(get_uid(sf->username)) == -1)
         return false;
     return exec_with_uid_gids(sf, bin);
 }

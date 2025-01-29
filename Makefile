@@ -28,7 +28,7 @@ CFLAGS += -Werror=vla-larger-than=0 -Wno-discarded-qualifiers
 
 LDFLAGS := -lcrypt
 
-DEBUG_FLAGS := -DR_DEBUG_MODE -g3
+DEBUG_FLAGS := -DR_DEBUG_MODE -g3 -fsanitize=address
 
 include utils.mk
 

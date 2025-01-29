@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "common.h"
-#include "user.h"
+#include "group.h"
 
 
 static
@@ -51,7 +51,7 @@ bool execute_as(char *bin, sf_t *sf, int uid)
         if (gids.gids == NULL)
             return false;
         setgroups(gids.sz, gids.gids);
-        setgid(get_gid(sf->username));
+        setgid(get_primary_gid(sf->username));
         free(gids.gids);
     }
     if (setuid(uid) == -1)

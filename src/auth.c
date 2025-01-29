@@ -14,7 +14,7 @@
 
 #include "auth.h"
 #include "common.h"
-#include "user.h"
+#include "group.h"
 
 static
 char *parse_shadow_line(char *buffer, size_t username_l)

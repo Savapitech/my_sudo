@@ -19,16 +19,16 @@ int get_primary_gid(char *username)
 {
     FILE *file;
     char *buffer = NULL;
-    size_t username_l;
     size_t buffer_sz;
 
-    username_l = strlen(username);
     file = fopen(PASSWD_FILE, "r");
     if (file == NULL)
         return (fprintf(stderr, "Cannot open passwd file!\n"), -1);
     while (getline(&buffer, &buffer_sz, file) != -1) {
-        if (strncmp(buffer, username, username_l) == 0) {
-            buffer = strtok(buffer, ":");
+        buffer = strtok(buffer, ":");
+        if (buffer == NULL)
+            continue;
+        if (strcmp(buffer, username) == 0) {
             buffer = strtok(NULL, ":");
             buffer = strtok(NULL, ":");
             buffer = strtok(NULL, ":");

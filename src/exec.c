@@ -34,8 +34,8 @@ bool exec_with_uid_gids(sf_t *sf, char *bin)
     return true;
 }
 
-// Replace the actual process with the bin pointed process as the specified uid
-bool execute_as(char *bin, sf_t *sf, int uid)
+static
+bool set_gids(sf_t *sf, int uid)
 {
     int gid = 0;
     gids_t gids = { .cap = 4, 0 };
@@ -54,6 +54,14 @@ bool execute_as(char *bin, sf_t *sf, int uid)
         setgid(get_primary_gid(sf->username));
         free(gids.gids);
     }
+    return true;
+}
+
+// Replace the actual process with the bin pointed process as the specified uid
+bool execute_as(char *bin, sf_t *sf, int uid)
+{
+    if (set_gids(sf, uid) == false)
+        return false;
     if (setuid(uid) == -1)
         return false;
     return exec_with_uid_gids(sf, bin);

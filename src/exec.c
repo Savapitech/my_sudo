@@ -35,31 +35,29 @@ bool exec_with_uid_gids(sf_t *sf, char *bin)
 }
 
 static
-bool set_gids(sf_t *sf, uid_t uid)
+bool set_gids(sf_t *sf)
 {
-    int gid = sf->group_name == NULL ? get_primary_gid(sf->username) :
-        get_gid(sf->group_name);
+    int gid = 0;
     gids_t gids = { .cap = 4, 0 };
 
-    if (uid == 0) {
-        setgid(0);
-        setgroups(1, &(gid_t){ 0 });
-    } else {
-        if (!get_user_groups(sf->username, &gids))
-            return false;
-        if (gids.gids == NULL)
-            return false;
-        setgroups(gids.sz, gids.gids);
-        setgid(gid);
-        free(gids.gids);
-    }
+    gid = sf->group_name == NULL ? get_primary_gid(sf->username) :
+        get_gid(sf->group_name);
+    if (!get_user_groups(sf->username, &gids))
+        return false;
+    if (gids.gids == NULL)
+        return false;
+    setgroups(gids.sz, gids.gids);
+    setgid(gid);
+    free(gids.gids);
     return true;
 }
 
 // Replace the actual process with the bin pointed process as the specified uid
-bool execute_as(char *bin, sf_t *sf, uid_t uid)
+bool execute_as(char *bin, sf_t *sf, int uid)
 {
-    if (set_gids(sf, uid) == false)
+    uid = uid == -1 ? 0 : uid;
+    sf->username = sf->username == NULL ? "root" : sf->username;
+    if (set_gids(sf) == false)
         return false;
     if (setuid(uid) == -1)
         return false;

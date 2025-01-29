@@ -40,14 +40,20 @@ bool set_gids(sf_t *sf)
     int gid = 0;
     gids_t gids = { .cap = 4, 0 };
 
-    gid = sf->group_name == NULL ? get_primary_gid(sf->username) :
-        get_gid(sf->group_name);
     if (!get_user_groups(sf->username, &gids))
         return false;
+    if (sf->group_name != NULL) {
+        gid = get_gid(sf->group_name);
+        if (gids.sz == gids.cap -2)
+            check_gids_cap(&gids.gids, gids.sz, &gids.cap);
+        gids.gids[gids.sz] = get_primary_gid(sf->username);
+        gids.sz++;
+    } else
+        gid = get_primary_gid(sf->username);
     if (gids.gids == NULL)
         return false;
-    setgroups(gids.sz, gids.gids);
     setgid(gid);
+    setgroups(gids.sz, gids.gids);
     free(gids.gids);
     return true;
 }

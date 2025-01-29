@@ -128,12 +128,11 @@ void add_group(char *line, char *username, gid_t *gids, size_t *ngids)
     }
 }
 
-static
 bool check_gids_cap(gid_t **gids, size_t ngids, size_t *cap)
 {
     gid_t *new_ptr;
 
-    if (ngids == *cap - 1) {
+    if (ngids == *cap - 2) {
         new_ptr = realloc(*gids, sizeof *gids * (*cap << 1));
         if (new_ptr == NULL)
             return false;

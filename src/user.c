@@ -85,14 +85,6 @@ char *get_username(uid_t uid)
 }
 
 static
-bool read_group_line(FILE *file, char *buffer, size_t size)
-{
-    if (fgets(buffer, size, file) == NULL)
-        return false;
-    return true;
-}
-
-static
 bool parse_group_line(char *line, const char *group_name,
     const char *username)
 {
@@ -127,7 +119,7 @@ bool is_user_in_group(const char *group_name, const char *username)
     file = fopen("/etc/group", "r");
     if (!file)
         return false;
-    while (read_group_line(file, line, sizeof(line)))
+    while (fgets(line, sizeof(line), file) != NULL)
         if (parse_group_line(line, group_name, username))
             return (fclose(file), true);
     return (fclose(file), false);
@@ -185,7 +177,7 @@ bool get_user_groups(char *username, gids_t *gids)
     file = fopen("/etc/group", "r");
     if (!file)
         return (free(gids), NULL);
-    while (read_group_line(file, line, sizeof(line))) {
+    while (fgets(line, sizeof(line), file) != NULL) {
         if (!check_gids_cap(&gids->gids, gids->sz, &gids->cap))
             return (fclose(file), false);
         add_group(line, username, gids->gids, &gids->sz);

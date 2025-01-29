@@ -35,13 +35,12 @@ bool exec_with_uid_gids(sf_t *sf, char *bin)
 }
 
 static
-bool set_gids(sf_t *sf, int uid)
+bool set_gids(sf_t *sf, uid_t uid)
 {
-    int gid = 0;
+    int gid = sf->group_name == NULL ? get_primary_gid(sf->username) :
+        get_gid(sf->group_name);
     gids_t gids = { .cap = 4, 0 };
 
-    uid = uid == -1 ? 0 : uid;
-    gid = uid == -1 ? 0 : gid;
     if (uid == 0) {
         setgid(0);
         setgroups(1, &(gid_t){ 0 });
@@ -51,14 +50,14 @@ bool set_gids(sf_t *sf, int uid)
         if (gids.gids == NULL)
             return false;
         setgroups(gids.sz, gids.gids);
-        setgid(get_primary_gid(sf->username));
+        setgid(gid);
         free(gids.gids);
     }
     return true;
 }
 
 // Replace the actual process with the bin pointed process as the specified uid
-bool execute_as(char *bin, sf_t *sf, int uid)
+bool execute_as(char *bin, sf_t *sf, uid_t uid)
 {
     if (set_gids(sf, uid) == false)
         return false;

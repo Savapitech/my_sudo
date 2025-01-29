@@ -27,7 +27,7 @@ int get_uid(char *username)
     file = fopen(PASSWD_FILE, "r");
     if (file == NULL)
         return (fprintf(stderr, "Cannot open passwd file!\n"), -1);
-    while (getline(&buffer, &buffer_sz, file)) {
+    while (getline(&buffer, &buffer_sz, file) != -1) {
         if (strncmp(buffer, username, username_l) == 0) {
             buffer = strtok(buffer, ":");
             buffer = strtok(NULL, ":");
@@ -50,7 +50,7 @@ int get_gid(char *username)
     file = fopen(PASSWD_FILE, "r");
     if (file == NULL)
         return (fprintf(stderr, "Cannot open passwd file!\n"), -1);
-    while (getline(&buffer, &buffer_sz, file)) {
+    while (getline(&buffer, &buffer_sz, file) != -1) {
         if (strncmp(buffer, username, username_l) == 0) {
             buffer = strtok(buffer, ":");
             buffer = strtok(NULL, ":");
@@ -74,7 +74,7 @@ char *get_username(uid_t uid)
     file = fopen(PASSWD_FILE, "r");
     if (file == NULL)
         return (fprintf(stderr, "Cannot open passwd file!\n"), NULL);
-    while (getline(&buffer, &buffer_sz, file)) {
+    while (getline(&buffer, &buffer_sz, file) != -1) {
         user = strtok(buffer, ":");
         strtok(NULL, ":");
         uid_str = strtok(NULL, ":");
@@ -87,9 +87,8 @@ char *get_username(uid_t uid)
 static
 bool read_group_line(FILE *file, char *buffer, size_t size)
 {
-    if (fgets(buffer, size, file) == NULL) {
+    if (fgets(buffer, size, file) == NULL)
         return false;
-    }
     return true;
 }
 

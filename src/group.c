@@ -149,7 +149,7 @@ bool get_user_groups(char *username, gids_t *gids)
     char line[512];
 
     gids->gids = calloc(gids->cap, sizeof(gid_t));
-    if (gids == NULL)
+    if (gids->gids == NULL)
         return false;
     if (username == NULL)
         return (free(gids), false);

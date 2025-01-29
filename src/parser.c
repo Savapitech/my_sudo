@@ -6,14 +6,20 @@
 */
 
 #include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "common.h"
+#include "user.h"
 
 static
 void switch_arg(sf_t *sf, char c, char *bin_name)
 {
     switch (c) {
         case 'u':
+            if (get_uid(optarg) == -1)
+                exit((fprintf(stderr, "my_sudo: unknown user %s\n", optarg),
+                    S_EXIT_FAILURE));
             sf->username = optarg;
             break;
         case 'E':

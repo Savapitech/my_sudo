@@ -13,18 +13,9 @@
 #include "user.h"
 
 static
-void switch_arg(sf_t *sf, char c, char *bin_name)
+void switch_arg2(sf_t *sf, char *bin_name, char c)
 {
     switch (c) {
-        case 'u':
-            if (get_uid(optarg) == -1)
-                exit((fprintf(stderr, "my_sudo: unknown user %s\n", optarg),
-                    S_EXIT_FAILURE));
-            sf->username = optarg;
-            break;
-        case 'E':
-            sf->flags |= S_FLAGS_ENV;
-            break;
         case 's':
             sf->flags |= S_FLAGS_SHELL;
             break;
@@ -34,6 +25,30 @@ void switch_arg(sf_t *sf, char c, char *bin_name)
         case '?':
         default:
             print_usages(bin_name, S_EXIT_FAILURE);
+    }
+}
+
+static
+void switch_arg(sf_t *sf, char c, char *bin_name)
+{
+    switch (c) {
+        case 'u':
+            if (get_uid(optarg) == -1)
+                exit((fprintf(stderr, "my_sudo: unknown user %s\n", optarg),
+                    S_EXIT_FAILURE));
+            sf->username = optarg;
+            break;
+        case 'g':
+            if (get_gid(optarg) == -1)
+                exit((fprintf(stderr, "my_sudo: unknown group %s\n", optarg),
+                    S_EXIT_FAILURE));
+            sf->group_name = optarg;
+            break;
+        case 'E':
+            sf->flags |= S_FLAGS_ENV;
+            break;
+        default:
+            switch_arg2(sf, bin_name, c);
     }
 }
 

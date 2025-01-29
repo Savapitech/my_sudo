@@ -19,6 +19,7 @@ enum {
 typedef struct {
     uint8_t flags;
     char *username;
+    char *group_name;
     char **args;
     char **env;
     int optindex;

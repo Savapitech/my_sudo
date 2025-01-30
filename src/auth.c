@@ -5,6 +5,7 @@
 ** _
 */
 
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +16,7 @@
 #include "auth.h"
 #include "common.h"
 #include "group.h"
+#include "user.h"
 
 static
 char *parse_shadow_line(char *buffer, size_t username_l)
@@ -47,6 +49,26 @@ char *get_pass_hash(char *username)
 }
 
 static
+bool check_sudoers_line(char *username, char *buffer, size_t username_l)
+{
+    char *gid;
+
+    if (strncmp(buffer, username, username_l) == 0)
+        return true;
+    buffer[strcspn(buffer, " ")] = '\0';
+    if (*buffer == '%' && is_user_in_group(buffer + 1, username))
+        return true;
+    if (*buffer == '#' && isdigit(*(buffer + 1))) {
+        asprintf(&gid, "%u", get_uid(username));
+        if (gid == NULL)
+            return false;
+        if (strncmp(gid, buffer + 1, strlen(gid)) == 0)
+            return (free(gid), true);
+    }
+    return false;
+}
+
+static
 bool check_sudoers(char *username)
 {
     FILE *file = fopen(SUDOERS_FILE, "ro");
@@ -59,13 +81,9 @@ bool check_sudoers(char *username)
             "(insufficient permissions ?)\n"), false);
     if (username_l < 1)
         return (fclose(file), false);
-    for (; getline(&buffer, &buffer_sz, file) != -1;) {
-        if (strncmp(buffer, username, username_l) == 0)
+    for (; getline(&buffer, &buffer_sz, file) != -1;)
+        if (check_sudoers_line(username, buffer, username_l) == true)
             return (fclose(file), true);
-        buffer[strcspn(buffer, " ")] = '\0';
-        if (*buffer == '%' && is_user_in_group(buffer + 1, username))
-            return (fclose(file), true);
-    }
     free(buffer);
     return (fclose(file), false);
 }
